@@ -24,6 +24,7 @@
     "grommet": "https://github.com/grommet/grommet/tarball/stable",
     "grommet-addons": "https://github.com/grommet/grommet-addons/tarball/stable",
     "grommet-templates": "https://github.com/grommet/grommet-templates/tarball/stable",
+    "gulp": "^3.9.1",
     "http-proxy": "^1.12.0",
     "imports-loader": "^0.7.0",
     "json-server": "^0.9.4",

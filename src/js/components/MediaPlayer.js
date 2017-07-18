@@ -9,7 +9,7 @@ import Headline from 'grommet/components/Headline';
 
 
 
-class Ferret extends Component {
+class MediaPlayer extends Component {
   constructor () {
     super();
     this._onResponsive = this._onResponsive.bind(this);
@@ -38,4 +38,4 @@ class Ferret extends Component {
 
 let select = (state) => ({});
 
-export default connect(select)(Ferret);
+export default connect(select)(MediaPlayer);
