@@ -3,8 +3,6 @@
 import { createStore, combineReducers, compose, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import reactReducer from  './reducers/reactReducer';
-// TODO: fix webpack loader to allow import * from './reducers'
-
 
 export default compose(
   applyMiddleware(thunk)
