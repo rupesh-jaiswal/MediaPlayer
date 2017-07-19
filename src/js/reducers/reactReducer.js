@@ -1,26 +1,24 @@
-export default function todos(state = [], action) {
-  switch (action.type) {
-    case 'ADD_MEMBER':
-      return state.concat([action.value])
-  	case 'REQUEST_LOGIN':
-      return authenticateUser(state,action.value )
-    default:
-      return state
-  }
+
+const initialState= {
+	index:0,
+	videos:[
+	'https://www.youtube.com/embed/MhkGQAoc7bc',
+	'https://www.youtube.com/embed/i9MHigUZKEM',
+	'https://www.youtube.com/embed/4WJLlWpzpP0']
+};
+
+const handlers={
+  'PLAY_NEXT':(state,action)=>({index:state.index+1})
+  ,'PLAY_PREVIOUS':(state,action)=>({index:state.index-1})
+  ,'ADD_VIDEO':(state,action)=>({videos:addVideo(state,action.value)})
 }
 
-function authenticateUser (state,data) {
-		 // return state.map(object=>{
-		 // if (object.name === data.name) {
-			// return  data;
-		 // }
-		
-		// });
-		for (var i=0;i< state.length;i++) {
-			if (state[i].name === data.name) {
-				state[i] =  data;
-			}
-		
-		}
-		return state;
+function addVideo (state,data) {
+		state.videos.push(data);
+		return state.videos;
+}
+export default function activityReducer (state = initialState, action) {
+  let handler = handlers[action.type];
+  if (!handler) return state;
+  return { ...state, ...handler(state, action) };
 }

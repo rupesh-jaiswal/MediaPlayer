@@ -6,8 +6,6 @@ import MediaPlayer from './components/MediaPlayer';
 
 export let routes = [
   { path: '/', component: MediaPlayer, 
-    childRoutes: [
-    //  { path: 'login', component: Login },  indexRoute: { component: Status },
-    ]
+    childRoutes: []
   }
 ];

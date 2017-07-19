@@ -12,49 +12,79 @@ import Button from 'grommet/components/Button';
 import CaretNextIcon from 'grommet/components/icons/base/CaretNext';
 import CaretPreviousIcon from 'grommet/components/icons/base/CaretPrevious';
 import AddIcon from 'grommet/components/icons/base/Add';
+import Pulse from 'grommet/components/icons/Pulse';
 import FormField from 'grommet/components/FormField';
 import TextInput from 'grommet/components/TextInput';
-
-class MediaPlayer extends Component {
-  constructor () {
-    super();
+import Notification from 'grommet/components/Notification';
+import {addVideoToPlaylist,playNext,playPrevious} from '../actions/actions';
+import events from 'events';
+import ReactPlayer from 'react-player'
+class MediaPlayer extends React.Component {
+  constructor (props) {
+    super(props);
+    this.eventEmitter = new events.EventEmitter();
     this._onChange = this._onChange.bind(this);
-    this._onResponsive = this._onResponsive.bind(this);
+    this._onPlayNext = this._onPlayNext.bind(this);
+    this._onPlayPrevious = this._onPlayPrevious.bind(this);
     this._onAddUrl = this._onAddUrl.bind(this);
-    this.state={};
+    this.state={
+      index:this.props.mediaProps.index,
+      videos:this.props.mediaProps.videos
+
+    };
   }
 
+  componentWillMount() {
+      this.eventEmitter.on('next',this._onPlayNext);
+      this.eventEmitter.on('previous',this._onPlayPrevious);
+  }
+
+  componentWillReceiveProps(receivedProps) {
+    this.setState({index:receivedProps.mediaProps.index,
+                  videos:receivedProps.mediaProps.videos});
+  }
   _onAddUrl(event) {
-    //this.setState({addVideo:event.currentTarget.value});
-    //this.props.dispatch(addVideoURL(this.state.addVideo));
-  }
-  _onResponsive (responsive) {
-    //this.props.dispatch(navResponsive(responsive));
+    this.props.dispatch(addVideoToPlaylist(this.state.addVideo));
   }
 
+  _onPlayPrevious() {
+    this.props.dispatch(playPrevious());
+  }
+
+  _onPlayNext() {
+    this.props.dispatch(playNext());
+  }
   _onChange(event) {
     this.setState({addVideo:event.currentTarget.value});
   }
 
   render() {
+    const src=this.state.videos[this.state.index];
+    const mediaPlayerContext=this;
+    let previousOnClick,nextOnClick;
+    if(this.state.index!==0) {
+      previousOnClick=function() {mediaPlayerContext.eventEmitter.emit('previous')};
+    } 
+    if(this.state.index!==this.state.videos.length-1) {
+      nextOnClick=function() {mediaPlayerContext.eventEmitter.emit('next')};
+    }
+    let message=this.state.videos.length+' videos are being added to the player.You can add more videos by clicking on plus icon.';
     return (
-      <App centered={false}>
+     
         <Article>
           <Section pad='large'
             justify='center'
-            align='center' colorIndex='grey-4'>
+            align='center' colorIndex='unknown'>
             <Headline margin='none'>
               Media Player
             </Headline>
           </Section>
           <Box align='center'>
-            <iframe width="560" height="315" src={this.state.addVideo} ></iframe>
-            <Box colorIndex='grey-4' size='large'>
-              <div width='425' height='349'>
-                Controls
+            <ReactPlayer width='720' url={src} />
+            <Box colorIndex='grey-4' size='xlarge'>
                 <Menu direction='row' size='large'>
-                  <Button icon={<CaretPreviousIcon />} primary={true} plain={true} />
-                  <Button icon={<CaretNextIcon />} plain={true}/>
+                  <Button icon={<CaretPreviousIcon colorIndex='accent-1'/>} plain={true} onClick={previousOnClick}/>
+                  <Button icon={<CaretNextIcon colorIndex='accent-1'/>} plain={true} onClick={nextOnClick}/>
                   <Menu responsive={true}
                     primary={false}
                     inline={false}
@@ -69,15 +99,18 @@ class MediaPlayer extends Component {
                     <Button icon={<AddIcon />} primary={true} label="Add to Playlist" onClick={this._onAddUrl}/>
                   </Menu>
                 </Menu>
-              </div>
             </Box>
           </Box>
+          <Notification message={message}/>
         </Article>
-      </App>
+
     );
   }
-}
+};
 
-let select = (state) => ({});
+let select = (state,props) => {
+  console.log(state);
+  return {mediaProps:state.reactReducer};
+};
 
 export default connect(select)(MediaPlayer);
